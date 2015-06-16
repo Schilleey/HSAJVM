@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <algorithm>
 #include <string>
 #include <cstring>
 
@@ -16,25 +15,6 @@ void printInformations()
 	std::cout << "HSAJVM - Hochschule Augsburg Java Virtual Machine" << std::endl;
 	std::cout << "Developers: Florian Haag, Thomas Gebele, Patrick Link" << std::endl;
 	std::cout << "Version: " << version_major << "." << version_minor << std::endl << std::endl;
-}
-
-void swapBytes(void *_object, size_t _size)
-{
-	unsigned char *start, *end;
-
-	for ( start = (unsigned char *)_object, end = start + _size - 1; start < end; ++start, --end )
-	{
-		unsigned char swap = *start;
-		*start = *end;
-		*end = swap;
-	}
-}
-
-template <class T>
-void swap_bytes(T* data)
-{
-	unsigned char* memc = reinterpret_cast<unsigned char*>(data);
-	std::reverse(memc, memc + sizeof(T));
 }
 
 //----------------------------------------------------------
