@@ -1,0 +1,5 @@
+Es fehlen:
+	- Stack
+	- Heap (brauchen wir den?)
+	- OPCODE Struktur
+	- Großen Switch für die Befehle

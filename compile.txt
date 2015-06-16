@@ -1,0 +1,3 @@
+Zum kompilieren einfach das Makefile mit "make" (Gibts auch für Windows) oder mit "mingw32-make" (Bei MinGW enthalten) ausführen.
+
+Oder in der Makefile nachsehen wie es von Hand funktioniert.
