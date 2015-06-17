@@ -1,3 +1,4 @@
 Zum kompilieren einfach das Makefile mit "make" (Gibts auch für Windows) oder mit "mingw32-make" (Bei MinGW enthalten) ausführen.
+Allgemeiner kann auch CMakeLists.txt mit "cmake" verwendet werden um sich die Build-Dateien für andere Compiler erstellen zu lassen.
 
 Oder in der Makefile nachsehen wie es von Hand funktioniert.
