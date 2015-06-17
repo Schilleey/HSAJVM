@@ -30,7 +30,9 @@ enum OPC
 	GOTO = 0xa7,
 	IMPDEP2 = 0xff,
 	IFLT = 0x9b,
-	RETURN = 0xb1
+	RETURN = 0xb1,
+	ALOAD_0 = 0x2a,
+	INVOKESPECIAL = 0xb7
 	
 	
 };
@@ -221,6 +223,13 @@ int main(int argc, char** argv)
 						break;
 					case RETURN:
 						std::cout << " RETURN recognized" << std::endl;
+						break;
+					case ALOAD_0:
+						std::cout << " RETURN recognized" << std::endl;
+						break;
+					case INVOKESPECIAL:
+						std::cout << " RETURN recognized" << std::endl;
+						break;
 					default:
 						std::cout << " !!! UNDEFINED_NOT_IN_LIST !!!" << std::endl;
 						break;
