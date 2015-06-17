@@ -1,0 +1,30 @@
+Hardware-Systeme Gliederung
+===========================
+
+1. Eigenschaften der JVM
+	- Datentypen
+	- PC-Register
+	- Stack
+	- Heap
+	- Method-Area
+	
+	-> praktisch: Struktur unserer VM
+
+2. Befehlssatz
+	- Befehlesformat
+	- Load und Store
+	- Arithmetik
+	- Typekonvertierung
+	- Objekterzeugung und Manipulation
+	- Dissasembliertes Programm
+	
+	-> praktisch: Programminterpretation
+
+3. Programmbeispiel
+	- Abbildung Java -> JVM
+	- Ähnlichkeiten zu x86 / zum VISCY Befehlssatz
+	- Aufbau einer Class-Datei
+	- Beispiel einer Klasse im Hex-Format
+
+	-> praktisch: Dateiformat 
+
