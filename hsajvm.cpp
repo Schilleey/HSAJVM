@@ -8,6 +8,33 @@
 #include "utils.h"
 #include "javaclass.h"
 
+enum OPC
+{
+	NOP = 0x00, 
+	ICONST_0 = 0x03,
+	ISTORE_1 = 0x3c,
+	ILOAD_1 = 0x1b,
+	LCONST_1 = 0x10,
+	ICONST_5 = 0x08,
+	IF_ICMPGE = 0xa2,
+	ILOAD_2 = 0x1c,
+	ICONST_4 = 0x07,
+	DCONST_0 = 0x0f,
+	ICONST_1= 0x04,
+	ISHL = 0x78,
+	ISTORE_2 = 0x3d,
+	INVOKESTATIC = 0xb8,
+	ICONST_M1 = 0x02,
+	IINC = 0x84,
+	ACONST_NULL = 0x01,
+	GOTO = 0xa7,
+	IMPDEP2 = 0xff,
+	IFLT = 0x9b,
+	RETURN = 0xb1
+	
+	
+};
+
 void printInformations()
 {
 	int version_major = 0;
@@ -20,7 +47,7 @@ void printInformations()
 //----------------------------------------------------------
 
 int main(int argc, char** argv)
-{
+{	
 	printInformations();
 	
 	if(argc < 2)
@@ -128,7 +155,76 @@ int main(int argc, char** argv)
 			std::cout << "Begin code (" << methodName << ")" << std::endl;
 			for(unsigned int j = 0; j < javaclass->methods[i].pCode_attr->code_length; j++)
 			{
-				std::cout << "OpCode: " << std::hex << (int)javaclass->methods[i].pCode_attr->code[j] << std::endl;
+				std::cout << "OpCode: " << std::hex << (int)javaclass->methods[i].pCode_attr->code[j];
+				//Here 4 testing start with operation Code				
+				switch((int)javaclass->methods[i].pCode_attr->code[j])
+				{
+					case NOP:
+						std::cout << " NOP recognized" << std::endl;
+						break;
+					case ICONST_0:
+						std::cout << " ICONST_0 recognized" << std::endl;
+						break;						
+					case ISTORE_1:
+						std::cout << " ISTORE_1 recognized" << std::endl;
+						break;	
+					case ILOAD_1:
+						std::cout << " ILOAD_1 recognized" << std::endl;
+						break;
+					case LCONST_1:
+						std::cout << " LCONST_1 recognized" << std::endl;
+						break;
+					case ICONST_5:
+						std::cout << " ICONST_5 recognized" << std::endl;
+						break;
+					case IF_ICMPGE:
+						std::cout << " IF_ICMPGE recognized" << std::endl;
+						break;
+					case ILOAD_2:
+						std::cout << " ILOAD_2 recognized" << std::endl;
+						break;
+					case ICONST_4:
+						std::cout << " ICONST_4 recognized" << std::endl;
+						break;
+					case DCONST_0:
+						std::cout << " DCONST_0 recognized" << std::endl;
+						break;
+					case ICONST_1:
+						std::cout << " ICONST_1 recognized" << std::endl;
+						break;
+					case ISHL:
+						std::cout << " ISHL recognized" << std::endl;
+						break;
+					case ISTORE_2:
+						std::cout << " ISTORE_2 recognized" << std::endl;
+						break;
+					case INVOKESTATIC:
+						std::cout << " INVOKESTATIC recognized" << std::endl;
+						break;
+					case ICONST_M1:
+						std::cout << " ICONST_M1 recognized" << std::endl;
+						break;
+					case IINC:
+						std::cout << " IINC recognized" << std::endl;
+						break;
+					case ACONST_NULL:
+						std::cout << " ACONST_NULL recognized" << std::endl;
+						break;
+					case GOTO:
+						std::cout << " GOTO recognized" << std::endl;
+						break;
+					case IMPDEP2:
+						std::cout << " IMPDEP2 recognized" << std::endl;
+						break;
+					case IFLT:
+						std::cout << " IFLT recognized" << std::endl;
+						break;
+					case RETURN:
+						std::cout << " RETURN recognized" << std::endl;
+					default:
+						std::cout << " !!! UNDEFINED_NOT_IN_LIST !!!" << std::endl;
+						break;
+				}
 			}
 			std::cout << "End code" << std::endl << std::endl;
 		}
@@ -137,6 +233,6 @@ int main(int argc, char** argv)
 			std::cout << "Method '" << methodName << "' is native!" << std::endl << std::endl;
 		}
 	}
-
 	return 0;
 }
+
