@@ -15,15 +15,15 @@ public:
 	
 	JavaClass* getClass();
 	method_info_ex* getMethod();
-	Stack<unsigned int>* getOpStack();
-	std::vector<unsigned int>& getLocalStore();
+	Stack<int>* getOpStack();
+	std::vector<int>& getLocalStore();
 	
 	unsigned int pc;
 	unsigned int sp;
 	
 private:
-	Stack<unsigned int>* operandStack;
-	std::vector<unsigned int> localStore;
+	Stack<int>* operandStack;
+	std::vector<int> localStore;
 	JavaClass* pClass;
 	method_info_ex* pMethod;
 };

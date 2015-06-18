@@ -6,7 +6,7 @@ Frame::Frame(method_info_ex* method)
 {
 	pc = 0;
 	sp = 0;
-	operandStack = new Stack<unsigned int>();
+	operandStack = new Stack<int>();
 	localStore.resize((int)method->pCode_attr->max_locals);
 }
 
@@ -26,12 +26,12 @@ method_info_ex* Frame::getMethod()
 	return pMethod;
 }
 
-Stack<unsigned int>* Frame::getOpStack()
+Stack<int>* Frame::getOpStack()
 {
 	return operandStack;
 }
 
-std::vector<unsigned int>& Frame::getLocalStore()
+std::vector<int>& Frame::getLocalStore()
 {
 	return localStore;
 }
