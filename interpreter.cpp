@@ -1,88 +1,195 @@
 #include <iostream>
 #include "interpreter.h"
+#include "constants.h"
+#include "utils.h"
 
 Interpreter::Interpreter()
 {
 }
+
 Interpreter::~Interpreter()
 {
 }
 
-void Interpreter::execute(unsigned char opcode)
-{
-	switch((int)opcode)
-				{
-					case NOP:
+void Interpreter::execute(Frame* frame)
+{	
+	if(frame->getMethod()->pCode_attr != NULL)
+	{
+		std::cout << "Begin code" << std::endl;
+		
+		unsigned char* opcodes = frame->getMethod()->pCode_attr->code;
+		
+		while(1)
+		{
+			std::cout << "OpCode: " << std::hex << (int)frame->getMethod()->pCode_attr->code[frame->pc];
+							
+			unsigned char opcode = frame->getMethod()->pCode_attr->code[frame->pc];
+			
+			switch((int)opcode)
+			{
+				case NOP:
+					{
 						std::cout << " NOP recognized" << std::endl;
+						frame->pc++;
 						break;
-					case ICONST_0:
-						std::cout << " ICONST_0 recognized" << std::endl;
-						break;						
-					case ISTORE_1:
-						std::cout << " ISTORE_1 recognized" << std::endl;
+					}
+					
+				case ICONST_M1:
+				case ICONST_0:
+				case ICONST_1:
+				case ICONST_4:
+				case ICONST_5:
+					{
+						std::cout << " ICONST_X recognized" << std::endl;
+						frame->sp++;
+						std::cout << " To be pushed: " << std::dec << ((unsigned char)opcodes[frame->pc] - ICONST_0) << std::endl;
+						frame->getOpStack()->push((unsigned char)opcodes[frame->pc] - ICONST_0); 
+						frame->pc++;
+						break;
+					}
+				
+				case ISTORE_0:				
+				case ISTORE_1:
+				case ISTORE_2:
+					{
+						std::cout << " ISTORE_X recognized" << std::endl;						
+						unsigned int op1 = frame->getOpStack()->pop();
+						frame->getLocalStore().at((unsigned char)opcodes[frame->pc] - ISTORE_0) = op1;			
+						frame->pc++;
 						break;	
-					case ILOAD_1:
-						std::cout << " ILOAD_1 recognized" << std::endl;
+					}
+				
+				case ILOAD_0:	
+				case ILOAD_1:
+				case ILOAD_2:
+					{
+						std::cout << " ILOAD_X recognized" << std::endl;
+						unsigned int op1 = frame->getLocalStore().at((unsigned char)opcodes[frame->pc] - ILOAD_0);
+						frame->getOpStack()->push((unsigned char)op1);
+						frame->pc++;
 						break;
-					case LCONST_1:
-						std::cout << " LCONST_1 recognized" << std::endl;
+					}
+					
+				case INVOKESPECIAL:
+					{
+						std::cout << " INVOKESPECIAL recognized" << std::endl;
+						frame->pc++;
 						break;
-					case ICONST_5:
-						std::cout << " ICONST_5 recognized" << std::endl;
-						break;
-					case IF_ICMPGE:
-						std::cout << " IF_ICMPGE recognized" << std::endl;
-						break;
-					case ILOAD_2:
-						std::cout << " ILOAD_2 recognized" << std::endl;
-						break;
-					case ICONST_4:
-						std::cout << " ICONST_4 recognized" << std::endl;
-						break;
-					case DCONST_0:
-						std::cout << " DCONST_0 recognized" << std::endl;
-						break;
-					case ICONST_1:
-						std::cout << " ICONST_1 recognized" << std::endl;
-						break;
-					case ISHL:
-						std::cout << " ISHL recognized" << std::endl;
-						break;
-					case ISTORE_2:
-						std::cout << " ISTORE_2 recognized" << std::endl;
-						break;
-					case INVOKESTATIC:
+					}
+					
+				case INVOKESTATIC:
+					{
 						std::cout << " INVOKESTATIC recognized" << std::endl;
+						std::cout << " Call setLeds" << std::endl;
+						frame->pc += 3;
 						break;
-					case ICONST_M1:
-						std::cout << " ICONST_M1 recognized" << std::endl;
+					}
+					
+				case IF_ICMPGE:
+					{
+						std::cout << " IF_ICMPGE recognized" << std::endl;
+						unsigned int op2 = frame->getOpStack()->pop();
+						unsigned int op1 = frame->getOpStack()->pop();
+						
+						std::cout << "OP1: " << std::dec << op1 << std::endl;
+						std::cout << "OP2: " << std::dec << op2 << std::endl;
+						
+						if(op1 >= op2)
+						{
+							frame->pc += getI2(&opcodes[frame->pc+1]);
+						}
+						else
+						{
+							frame->pc += 3;
+						}
+						
+						frame->sp -= 2;
 						break;
-					case IINC:
+					}
+					
+				case ISHL:
+					{
+						std::cout << " ISHL recognized" << std::endl;
+						unsigned int op2 = frame->getOpStack()->pop();
+						unsigned int op1 = frame->getOpStack()->pop();
+						op1 = op1 << (op2 & 0xf8000000);
+						frame->getOpStack()->push(op1);
+						frame->pc++;
+						break;
+					}
+					
+				case IINC:
+					{
 						std::cout << " IINC recognized" << std::endl;
+						frame->getLocalStore().at((unsigned char)opcodes[frame->pc+1]) += (char)opcodes[frame->pc+2];
+						frame->pc += 3;
 						break;
-					case ACONST_NULL:
-						std::cout << " ACONST_NULL recognized" << std::endl;
-						break;
-					case GOTO:
+					}
+					
+				case GOTO:
+					{
 						std::cout << " GOTO recognized" << std::endl;
+						// Get next 2 bytes from pc+1 and convert them to short (unsigned int)
+						frame->pc += (unsigned int)getI2(&opcodes[frame->pc+1]);
 						break;
-					case IMPDEP2:
-						std::cout << " IMPDEP2 recognized" << std::endl;
-						break;
-					case IFLT:
+					}
+
+				case IFLT:
+					{
 						std::cout << " IFLT recognized" << std::endl;
+						unsigned int op1 = frame->getOpStack()->pop();
+						
+						if(op1 < 0)
+						{
+							short jump = getI2(&opcodes[frame->pc+1]);
+							std::cout << "FLT ###: " << std::dec << jump << std::endl;
+							frame->pc += jump;
+						}
+						else
+						{
+							frame->pc += 3;
+						}
+						frame->sp--;
+						
 						break;
-					case RETURN:
+					}
+					
+				case ALOAD_0:
+					{
+						std::cout << " ALOAD_0 recognized" << std::endl;
+						frame->getOpStack()->push(frame->getLocalStore().at((unsigned char)opcodes[frame->pc] - ALOAD_0));
+						frame->pc++;
+						break;
+					}
+					
+				case BIPUSH:
+					{
+						std::cout << " BIPUSH recognized" << std::endl;
+						frame->getOpStack()->push((int)opcodes[frame->pc+1]);
+						frame->pc += 2;
+						break;
+					}
+					
+				case RETURN:
+					{
 						std::cout << " RETURN recognized" << std::endl;
-						break;
-					case ALOAD_0:
-						std::cout << " RETURN recognized" << std::endl;
-						break;
-					case INVOKESPECIAL:
-						std::cout << " RETURN recognized" << std::endl;
-						break;
-					default:
+						std::cout << "End code" << std::endl << std::endl;
+						return;
+					}
+					
+				default:
+					{
 						std::cout << " !!! UNDEFINED_NOT_IN_LIST !!!" << std::endl;
+						frame->pc++;
 						break;
-				}	
+					}
+			}	
+			
+		}
+		
+	}
+	else if(frame->getMethod()->access_flags && ACC_NATIVE)
+	{
+		std::cout << "Method is native!" << std::endl << std::endl;
+	}
 }

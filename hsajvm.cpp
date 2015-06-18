@@ -120,28 +120,33 @@ int main(int argc, char** argv)
 	std::cout << "Code" << std::endl;
 	std::cout << "====" << std::endl << std::endl;
 	
-	for(unsigned int i = 0; i < javaclass->methods_count; i++)
-	{
-		std::string methodName;
-		javaclass->getStringFromConstPool(javaclass->methods[i].name_index, methodName);
+	Frame* mFrame = new Frame(&javaclass->methods[2]);
+	
+	interpreter.execute(mFrame);
+	
+	//for(unsigned int i = 0; i < javaclass->methods_count; i++)
+	//{
+		//std::string methodName;
+		//javaclass->getStringFromConstPool(javaclass->methods[i].name_index, methodName);
 		
-		if(javaclass->methods[i].pCode_attr != NULL)
-		{
-			std::cout << "Begin code (" << methodName << ")" << std::endl;
-			for(unsigned int j = 0; j < javaclass->methods[i].pCode_attr->code_length; j++)
-			{
-				std::cout << "OpCode: " << std::hex << (int)javaclass->methods[i].pCode_attr->code[j];
+		//if(javaclass->methods[i].pCode_attr != NULL)
+		//{
+			//std::cout << "Begin code (" << methodName << ")" << std::endl;
+			//for(unsigned int j = 0; j < javaclass->methods[i].pCode_attr->code_length; j++)
+			//{
+				//std::cout << "OpCode: " << std::hex << (int)javaclass->methods[i].pCode_attr->code[j];
 								
-				interpreter.execute(javaclass->methods[i].pCode_attr->code[j]);
+				//interpreter.execute(javaclass->methods[i].pCode_attr->code[j]);
 				
-			}
-			std::cout << "End code" << std::endl << std::endl;
-		}
-		else if(javaclass->methods[i].access_flags && ACC_NATIVE)
-		{
-			std::cout << "Method '" << methodName << "' is native!" << std::endl << std::endl;
-		}
-	}
+			//}
+			//std::cout << "End code" << std::endl << std::endl;
+		//}
+		//else if(javaclass->methods[i].access_flags && ACC_NATIVE)
+		//{
+			//std::cout << "Method '" << methodName << "' is native!" << std::endl << std::endl;
+		//}
+	//}
+	
 	return 0;
 }
 

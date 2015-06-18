@@ -6,7 +6,7 @@ CC = g++
 CFLAGS = -static-libgcc -static-libstdc++
 TARGET = hsajvm.exe
 
-SRC = hsajvm.cpp javaclass.cpp interpreter.cpp
+SRC = hsajvm.cpp javaclass.cpp interpreter.cpp frame.cpp
 OBJ = ${SRC:.cpp=.o}
 
 .PHONY: clean
