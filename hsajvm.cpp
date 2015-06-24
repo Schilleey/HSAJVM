@@ -17,50 +17,13 @@ void printInformations()
 	std::cout << "Version: " << version_major << "." << version_minor << std::endl << std::endl;
 }
 
-//----------------------------------------------------------
+void printHelp()
+{
+	std::cout << "Usage: hsajvm [-c|-r] <Classname>" << std::endl;
+}
 
-int main(int argc, char** argv)
-{	
-	printInformations();
-	
-	Interpreter interpreter;
-	
-	if(argc < 2)
-	{
-		std::cout << "ERROR: No class specified..." << std::endl;
-		return -1;
-	}
-	
-	std::string className(argv[1]);
-	className.append(".class");
-	
-	std::ifstream bytestream;
-	bytestream.open(className.c_str(), std::ifstream::in | std::ifstream::binary);
-
-	if (bytestream.fail())
-	{
-	    std::cout << "ERROR: Cannot open the file..." << std::endl;
-	    return -1;
-	}
-
-	bytestream.seekg(0, bytestream.end);
-	int length = bytestream.tellg();
-	bytestream.seekg(0, bytestream.beg);
-	char* bytes = new char[length];
-
-	bytestream.read(bytes, length);
-	bytestream.close();
-	
-	// Create the JavaClass
-	JavaClass* javaclass = new JavaClass;
-	bool no_error = javaclass->parseJavaClass(bytes);
-	
-	if(!no_error)
-	{
-		std::cout << "ERROR: Parsing java class..." << std::endl;
-		return -1;
-	}
-	
+void printJavaClassInformations(JavaClass* javaclass)
+{
 	std::cout << std::endl;
 	
 	std::cout << "Informations" << std::endl;
@@ -70,6 +33,28 @@ int main(int argc, char** argv)
 	std::cout << "Magic: " << std::hex << javaclass->magic << std::endl;
 	std::cout << "Minor version: " << std::hex << javaclass->minor_version << std::endl;
 	std::cout << "Major version: " << std::hex << javaclass->major_version << std::endl;
+	
+	std::cout << std::endl;
+	
+	std::cout << "Pool count: " << std::dec << javaclass->constant_pool_count << std::endl;
+	std::cout << "Interfaces count: " << std::dec << javaclass->interfaces_count << std::endl;
+	std::cout << "Fields count: " << std::dec << javaclass->fields_count << std::endl;
+	std::cout << "Methods count: " << std::dec << javaclass->methods_count << std::endl;
+	std::cout << "Attributes count: " << std::dec << javaclass->attributes_count << std::endl;
+	
+	std::cout << std::endl;
+	
+	std::cout << "Methods" << std::endl;
+	std::cout << "=======" << std::endl << std::endl;
+	
+	std::string strName, strDesc;
+	for(unsigned int i = 0; i < javaclass->methods_count; i++)
+	{
+		javaclass->getStringFromConstPool(javaclass->methods[i].name_index, strName);
+		javaclass->getStringFromConstPool(javaclass->methods[i].descriptor_index, strDesc);
+		
+		std::cout << "Method = " << strName << " - " << strDesc << std::endl;
+	}
 	
 	std::cout << std::endl;
 	
@@ -114,15 +99,107 @@ int main(int argc, char** argv)
 			}
 		}
 	}
+}
+
+//----------------------------------------------------------
+
+int main(int argc, char** argv)
+{	
+	printInformations();
 	
-	std::cout << std::endl;
+	bool pClassInformations = false;
+	bool pRunInformations = false;
 	
-	std::cout << "Code" << std::endl;
-	std::cout << "====" << std::endl << std::endl;
+	if(argc < 2)
+	{
+		printHelp();
+		return 0;
+	}
+	else if(argc < 3)
+	{
+	}
+	else if(argc < 4)
+	{
+		if(std::string(argv[1]) == "-c")
+		{
+			pClassInformations = true;
+		}
+		else if(std::string(argv[1]) == "-r")
+		{
+			pRunInformations = true;
+		}
+		else if((std::string(argv[1]) == "-cr") || (std::string(argv[1]) == "-rc"))
+		{
+			pClassInformations = true;
+			pRunInformations = true;
+		}
+		else
+		{
+			std::cout << "ERROR: Unrecognized command line argument: " << argv[1] << std::endl << std::endl;
+			printHelp();
+			return -1;
+		}
+	}
+	else if(argc > 3)
+	{
+		std::cout << "ERROR: Too many arguments..." << std::endl << std::endl;
+		printHelp();
+		return -1;
+	}
+	else
+	{
+		printHelp();
+		return 0;
+	}
 	
-	// Method ad index 2 is main
+	std::string className(argv[argc-1]);
+	className.append(".class");
+	
+	std::ifstream bytestream;
+	bytestream.open(className.c_str(), std::ifstream::in | std::ifstream::binary);
+
+	if (bytestream.fail())
+	{
+	    std::cout << "ERROR: Cannot open the file..." << std::endl;
+	    return -1;
+	}
+
+	bytestream.seekg(0, bytestream.end);
+	int length = bytestream.tellg();
+	bytestream.seekg(0, bytestream.beg);
+	char* bytes = new char[length];
+
+	// Read the bytecode from class file
+	bytestream.read(bytes, length);
+	bytestream.close();
+	
+	// Create the JavaClass
+	JavaClass* javaclass = new JavaClass;
+	bool no_error = javaclass->parseJavaClass(bytes);
+	
+	if(!no_error)
+	{
+		std::cout << "ERROR: Parsing java class..." << std::endl;
+		return -1;
+	}
+	
+	// JavaClass debugging informations
+	if(pClassInformations)
+	{
+		printJavaClassInformations(javaclass);
+		
+		std::cout << std::endl;
+		
+		std::cout << "Code" << std::endl;
+		std::cout << "====" << std::endl << std::endl;
+	}
+	
+	// Method at index 2 is main
 	Frame* mFrame = new Frame(&javaclass->methods[2]);
 	
+	// Interpreter executes the frame
+	Interpreter interpreter;
+	interpreter.printDebuggingInformations(pRunInformations);
 	interpreter.execute(mFrame);
 	
 	return 0;

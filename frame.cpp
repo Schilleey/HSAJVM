@@ -35,3 +35,8 @@ std::vector<int>& Frame::getLocalStore()
 {
 	return localStore;
 }
+
+void Frame::setClass(JavaClass* pClass)
+{
+	pClass = pClass;
+}

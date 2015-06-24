@@ -43,6 +43,10 @@ public:
 	virtual ~Interpreter();
 	
 	void execute(Frame* frame);
+	void printDebuggingInformations(bool print);
+	
+private:
+	bool printDInfo;
 };
 
 #endif // INTERPRETER_H

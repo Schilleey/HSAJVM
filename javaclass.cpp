@@ -28,7 +28,6 @@ bool JavaClass::parseJavaClass(char* data)
 	idx += 2;
 	
 	// Cp info
-	std::cout << "Pool count: " << constant_pool_count << std::endl;
 	if(constant_pool_count > 0)
 		parseCpInfo(data, idx);	
 	
@@ -42,7 +41,6 @@ bool JavaClass::parseJavaClass(char* data)
 	idx += 2;
 	
 	// Interfaces
-	std::cout << "Interfaces count: " << interfaces_count << std::endl;
 	if(interfaces_count > 0)
 		parseInterfaces(data, idx);
 	
@@ -50,7 +48,6 @@ bool JavaClass::parseJavaClass(char* data)
 	idx += 2;
 	
 	// Field info
-	std::cout << "Fields count: " << fields_count << std::endl;
 	if(fields_count > 0)
 		parseFieldInfo(data, idx);
 	
@@ -58,7 +55,6 @@ bool JavaClass::parseJavaClass(char* data)
 	idx += 2;
 	
 	// Methods info
-	std::cout << "Methods count: " << methods_count << std::endl;
 	if(methods_count > 0)
 		parseMethodInfo(data, idx);
 		
@@ -66,7 +62,6 @@ bool JavaClass::parseJavaClass(char* data)
 	idx += 2;
 	
 	// Attributes info
-	std::cout << "Attributes count: " << attributes_count << std::endl;
 	if(attributes_count > 0)
 		parseAttributeInfo(data, idx);
 		
@@ -206,12 +201,6 @@ void JavaClass::parseMethodInfo(char* data, int& idx)
 		idx += 2;
 		methods[i].attributes_count = getU2(&data[idx]); // attributes_count
 		idx += 2;
-		
-		std::string strName, strDesc;
-		getStringFromConstPool(methods[i].name_index, strName);
-		getStringFromConstPool(methods[i].descriptor_index, strDesc);
-		
-		std::cout << "Method = " << strName << " - " << strDesc << std::endl;
 
 		methods[i].pCode_attr = NULL;
 		

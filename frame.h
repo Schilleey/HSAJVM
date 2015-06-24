@@ -18,6 +18,8 @@ public:
 	Stack<int>* getOpStack();
 	std::vector<int>& getLocalStore();
 	
+	void setClass(JavaClass* pClass);
+	
 	unsigned int pc;
 	unsigned int sp;
 	
